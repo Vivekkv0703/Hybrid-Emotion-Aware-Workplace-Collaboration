@@ -1,0 +1,34 @@
+from datetime import datetime, UTC
+from mongoengine import (
+    Document,
+    StringField,
+    EmailField,
+    ReferenceField,
+    BooleanField,
+    DateTimeField,
+    CASCADE,
+    NULLIFY,
+)
+
+
+class Employee(Document):
+    first_name = StringField(required=True)
+    last_name = StringField()
+    email = EmailField(required=True, unique=True)
+    company = ReferenceField("Company", reverse_delete_rule=CASCADE)
+    role = StringField()
+    manager = ReferenceField("Employee", reverse_delete_rule=NULLIFY)
+    is_active = BooleanField(default=True)
+    created_at = DateTimeField(default=lambda: datetime.now(UTC))
+    updated_at = DateTimeField(default=lambda: datetime.now(UTC))
+
+    meta = {
+        "collection": "Employee",
+        "indexes": [{"fields": ["email"], "unique": True}],
+    }
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.now(UTC)
+        self.updated_at = datetime.now(UTC)
+        return super(Employee, self).save(*args, **kwargs)
