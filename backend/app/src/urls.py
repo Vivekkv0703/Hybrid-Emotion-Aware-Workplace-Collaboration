@@ -20,5 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("emotion_classifier.urls")),
+    path("api/emotion-classification/", include("emotion_classifier.urls")),
 ]

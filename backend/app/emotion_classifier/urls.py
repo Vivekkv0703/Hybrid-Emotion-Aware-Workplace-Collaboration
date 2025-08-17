@@ -5,9 +5,9 @@ from .viewsets.text_emotion_classification_viewset import (
 )
 
 urlpatterns = [
-    path("emotion-classification/text/", TextEmotionClassificationView.as_view()),
+    path("text/", TextEmotionClassificationView.as_view()),
     path(
-        "emotion-classification/text/batch/",
+        "text/batch/",
         BatchTextEmotionClassificationView.as_view(),
     ),
 ]
