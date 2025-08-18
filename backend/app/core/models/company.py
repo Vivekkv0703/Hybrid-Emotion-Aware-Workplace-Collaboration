@@ -15,11 +15,23 @@ class Company(Document):
     meta = {"collection": "Company", "indexes": [{"fields": ["name"], "unique": True}]}
 
     def clean(self):
-        self.name = self.name.lower() if self.name else None
-        self.domain = self.domain.lower() if self.domain else None
-        self.industry = self.industry.lower() if self.industry else None
-        self.location = self.location.lower() if self.location else None
-        self.state = self.state.lower() if self.state else None
+        def _normalize(val):
+            if isinstance(val, list):
+                return val[0] if val else None
+            return val
+
+        self.name = _normalize(self.name).lower() if _normalize(self.name) else None
+        self.domain = (
+            _normalize(self.domain).lower() if _normalize(self.domain) else None
+        )
+        self.industry = (
+            _normalize(self.industry).lower() if _normalize(self.industry) else None
+        )
+        self.location = (
+            _normalize(self.location).lower() if _normalize(self.location) else None
+        )
+        self.state = _normalize(self.state).lower() if _normalize(self.state) else None
+        self.logo_url = _normalize(self.logo_url)
 
     def save(self, *args, **kwargs):
         if not self.created_at:

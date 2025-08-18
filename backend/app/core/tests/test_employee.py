@@ -1,4 +1,3 @@
-import json
 from rest_framework.test import APIClient
 from .test_setup_mixin import TestSetupMixin
 from ..models.company import Company
@@ -85,7 +84,7 @@ class EmployeeTests(TestSetupMixin):
             "is_active": True,
         }
         EmployeeDataStore.create_employee(self.company.id, employee_data2)
-        
+
         url = f"/api/core/companies/{self.company.id}/employees/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -101,16 +100,16 @@ class EmployeeTests(TestSetupMixin):
             "manager": None,
             "is_active": True,
         }
-        
+
         employee = EmployeeDataStore.create_employee(self.company.id, data)
 
         url = f"/api/core/companies/{self.company.id}/employees/{employee.id}/"
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
-        
+
         with self.assertRaises(Employee.DoesNotExist):
             EmployeeDataStore.get_employee(employee.id)
-            
+
     def test_update_employee(self):
         data = {
             "first_name": "aryan",
@@ -120,7 +119,7 @@ class EmployeeTests(TestSetupMixin):
             "manager": None,
             "is_active": True,
         }
-        
+
         employee = EmployeeDataStore.create_employee(self.company.id, data)
 
         updated_data = {

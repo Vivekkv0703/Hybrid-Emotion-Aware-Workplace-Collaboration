@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import dotenv
+import cloudinary
 from pathlib import Path
 from mongoengine import connect
 
@@ -126,9 +128,21 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+dotenv.load_dotenv()
+
 MONGO_URI = os.getenv("MONGO_URI", None)
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", None)
+CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY", None)
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET", None)
 
 if MONGO_URI:
     connect(MONGO_URI, alias="default")
 else:
     connect(db="DeepVue", host="localhost", port=27017, alias="default")
+
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+    )
