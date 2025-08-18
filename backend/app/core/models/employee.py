@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from mongoengine import (
     Document,
     StringField,
@@ -19,8 +19,8 @@ class Employee(Document):
     role = StringField()
     manager = ReferenceField("Employee", reverse_delete_rule=NULLIFY)
     is_active = BooleanField(default=True)
-    created_at = DateTimeField(default=lambda: datetime.now(UTC))
-    updated_at = DateTimeField(default=lambda: datetime.now(UTC))
+    created_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
+    updated_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
 
     meta = {
         "collection": "Employee",
@@ -29,6 +29,6 @@ class Employee(Document):
 
     def save(self, *args, **kwargs):
         if not self.created_at:
-            self.created_at = datetime.now(UTC)
-        self.updated_at = datetime.now(UTC)
+            self.created_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(timezone.utc)
         return super(Employee, self).save(*args, **kwargs)

@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from mongoengine import Document, DateTimeField, StringField
 
 
@@ -9,8 +9,8 @@ class Company(Document):
     logo_url = StringField()
     location = StringField()
     state = StringField()
-    created_at = DateTimeField(default=lambda: datetime.now(UTC))
-    updated_at = DateTimeField(default=lambda: datetime.now(UTC))
+    created_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
+    updated_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
 
     meta = {"collection": "Company", "indexes": [{"fields": ["name"], "unique": True}]}
 
@@ -23,6 +23,6 @@ class Company(Document):
 
     def save(self, *args, **kwargs):
         if not self.created_at:
-            self.created_at = datetime.now(UTC)
-        self.updated_at = datetime.now(UTC)
+            self.created_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(timezone.utc)
         return super(Company, self).save(*args, **kwargs)
