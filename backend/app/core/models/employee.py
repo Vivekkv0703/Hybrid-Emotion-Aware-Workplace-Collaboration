@@ -15,6 +15,7 @@ class Employee(Document):
     first_name = StringField(required=True)
     last_name = StringField()
     email = EmailField(required=True, unique=True)
+    password = StringField(required=True)
     company = ReferenceField("Company", reverse_delete_rule=CASCADE)
     role = StringField()
     manager = ReferenceField("Employee", reverse_delete_rule=NULLIFY)
@@ -24,7 +25,7 @@ class Employee(Document):
 
     meta = {
         "collection": "Employee",
-        "indexes": [{"fields": ["email"], "unique": True}],
+        "indexes": [{"fields": ["company", "email"], "unique": True}],
     }
 
     def save(self, *args, **kwargs):

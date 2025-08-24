@@ -2,6 +2,7 @@ from rest_framework.test import APIClient
 from .test_setup_mixin import TestSetupMixin
 from ..models.company import Company
 from ..models.employee import Employee
+from ..utils.auth import create_access_token
 from ..domain.employee.employee_datastore import EmployeeDataStore
 
 
@@ -28,12 +29,16 @@ class EmployeeTests(TestSetupMixin):
             "first_name": "aryan",
             "last_name": "satija",
             "email": "aryan.satija@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": None,
             "is_active": True,
         }
 
         employee = EmployeeDataStore.create_employee(self.company.id, data)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {str(create_access_token(employee.id))}"
+        )
         url = f"/api/core/companies/{self.company.id}/employees/{employee.id}/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -49,6 +54,7 @@ class EmployeeTests(TestSetupMixin):
             "first_name": "aryan",
             "last_name": "satija",
             "email": "aryan.satija@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": None,
             "is_active": True,
@@ -58,17 +64,18 @@ class EmployeeTests(TestSetupMixin):
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, 201)
         response_data = response.json()
-        self.assertEqual(response_data["first_name"], data["first_name"])
-        self.assertEqual(response_data["last_name"], data["last_name"])
-        self.assertEqual(response_data["email"], data["email"])
-        self.assertIsNone(response_data["manager_id"])
-        self.assertTrue(response_data["is_active"])
+        self.assertEqual(response_data["employee"]["first_name"], data["first_name"])
+        self.assertEqual(response_data["employee"]["last_name"], data["last_name"])
+        self.assertEqual(response_data["employee"]["email"], data["email"])
+        self.assertIsNone(response_data["employee"]["manager_id"])
+        self.assertTrue(response_data["employee"]["is_active"])
 
     def test_list_employee(self):
         employee_data1 = {
             "first_name": "aryan",
             "last_name": "satija",
             "email": "aryan.satija@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": None,
             "is_active": True,
@@ -79,12 +86,15 @@ class EmployeeTests(TestSetupMixin):
             "first_name": "vasu",
             "last_name": "sharma",
             "email": "vasu.sharma@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": employee1.id,
             "is_active": True,
         }
         EmployeeDataStore.create_employee(self.company.id, employee_data2)
-
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {str(create_access_token(employee1.id))}"
+        )
         url = f"/api/core/companies/{self.company.id}/employees/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -96,13 +106,16 @@ class EmployeeTests(TestSetupMixin):
             "first_name": "aryan",
             "last_name": "satija",
             "email": "aryan.satija@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": None,
             "is_active": True,
         }
 
         employee = EmployeeDataStore.create_employee(self.company.id, data)
-
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {str(create_access_token(employee.id))}"
+        )
         url = f"/api/core/companies/{self.company.id}/employees/{employee.id}/"
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
@@ -115,6 +128,7 @@ class EmployeeTests(TestSetupMixin):
             "first_name": "aryan",
             "last_name": "satija",
             "email": "aryan.satija@gmail.com",
+            "password": "smile",
             "role": "software engineer",
             "manager": None,
             "is_active": True,
@@ -130,6 +144,9 @@ class EmployeeTests(TestSetupMixin):
             "manager": None,
             "is_active": True,
         }
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {str(create_access_token(employee.id))}"
+        )
 
         url = f"/api/core/companies/{self.company.id}/employees/{employee.id}/"
         response = self.client.put(url, updated_data, format="json")
