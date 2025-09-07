@@ -6,6 +6,7 @@ from .viewsets.text_emotion_classification_viewset import (
 from .viewsets.ambience_emotion_classification_viewset import (
     AmbienceEmotionClassificationViewset,
 )
+from .viewsets.frame_emotion_classification_viewset import FrameEmotionClassificationView
 
 urlpatterns = [
     path("text/", TextEmotionClassificationView.as_view()),
@@ -17,4 +18,5 @@ urlpatterns = [
         "ambience/process_image/",
         AmbienceEmotionClassificationViewset.as_view({"post": "process_image"}),
     ),
+    path("frame/", FrameEmotionClassificationView.as_view({"post": "post"}))
 ]
