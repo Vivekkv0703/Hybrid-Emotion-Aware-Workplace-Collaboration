@@ -5,7 +5,6 @@ from ..service.ambience_emotion_classification_service import (
     AmbienceEmotionClassifactionService,
 )
 
-
 class AmbienceEmotionClassificationViewset(ViewSet):
     def process_image(self, request, *args, **kwargs):
         image_file = request.FILES.get("image")
@@ -17,3 +16,13 @@ class AmbienceEmotionClassificationViewset(ViewSet):
         )
 
         return Response(metadata, status=HTTP_200_OK)
+
+    def process_voice(self, request, *args, **kwargs):
+        audio_file = request.FILES.get('voice')
+        if not audio_file:
+            return Response({"error": "No audio provided"}, status=HTTP_400_BAD_REQUEST)
+        
+        response = AmbienceEmotionClassifactionService.process_uploaded_voice(audio_file)
+        
+        return Response(response, status=HTTP_200_OK)
+        

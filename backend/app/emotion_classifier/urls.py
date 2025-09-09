@@ -18,5 +18,9 @@ urlpatterns = [
         "ambience/process_image/",
         AmbienceEmotionClassificationViewset.as_view({"post": "process_image"}),
     ),
+    path(
+        "ambience/process_voice/",
+        AmbienceEmotionClassificationViewset.as_view({"post": "process_voice"}),
+    ),
     path("frame/", FrameEmotionClassificationView.as_view({"post": "post"}))
 ]

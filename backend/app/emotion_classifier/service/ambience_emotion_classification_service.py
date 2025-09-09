@@ -3,8 +3,15 @@ import cv2
 import math
 import tempfile
 import numpy as np
+import soundfile as sf
+import tensorflow as tf
 from PIL import Image, ExifTags
+from transformers import AutoFeatureExtractor, TFAutoModelForAudioClassification
 
+model_name = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
+
+feature_extractor = AutoFeatureExtractor.from_pretrained(model_name)
+model = TFAutoModelForAudioClassification.from_pretrained(model_name)
 
 class AmbienceEmotionClassifactionService:
     MD2_LUX_HASH = "67b2177e9e29e113246fed14c6915448"
@@ -67,5 +74,41 @@ class AmbienceEmotionClassifactionService:
         return {
             cls.MD2_LUX_HASH: lux,
             cls.MD2_BRIGHTNESS_HASH: brightness,
-            cls.MD2_ISO_HASH: meta["iso"] if meta["iso"] else -1,
+            cls.MD2_ISO_HASH: meta["iso"] if meta and meta["iso"] else -1,
         }
+        
+
+    @classmethod
+    def _predict_emotion(cls, audio_file_path):
+        waveform, sr = sf.read(audio_file_path)
+        inputs = feature_extractor(
+            waveform, sampling_rate=sr, return_tensors="tf", padding=True
+        )
+        
+        logits = model(**inputs).logits
+        probs = tf.nn.softmax(logits, axis=-1)
+        pred_idx = tf.argmax(probs, axis=-1).numpy()[0]
+        
+        label = model.config.id2label[pred_idx]
+        confidence = probs[0][pred_idx].numpy()
+        
+        all_predictions = [{model.config.id2label[i]: float(p)} for i, p in enumerate(probs[0].numpy())]
+        
+        return {
+            "emotion": label,
+            "confidence": confidence,
+            "all_predictions": all_predictions
+        }
+
+    @classmethod
+    def process_uploaded_voice(cls, audio_file):
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+            for chunk in audio_file.chunks():
+                tmp.write(chunk)
+            tmp_path = tmp.name
+
+        try:
+            return cls._predict_emotion(tmp_path)
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
