@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.apps import apps
+from transformers import TFAutoModelForSequenceClassification, AutoTokenizer
 import tensorflow as tf
 
 
@@ -15,14 +16,18 @@ class TextEmotionClassificationView(APIView):
         emotion_classifier_config = apps.get_app_config("emotion_classifier")
 
         if model == "v1":
-            tokenizer, model = (
-                emotion_classifier_config.bert_tokenizer,
-                emotion_classifier_config.bert_model,
+            model = TFAutoModelForSequenceClassification.from_pretrained(
+                emotion_classifier_config.bert_dir, local_files_only=True
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                emotion_classifier_config.bert_dir, local_files_only=True
             )
         else:
-            tokenizer, model = (
-                emotion_classifier_config.bert_tokenizer_v2,
-                emotion_classifier_config.bert_model_v2,
+            model = TFAutoModelForSequenceClassification.from_pretrained(
+                emotion_classifier_config.bert_dir_v2, local_files_only=True
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                emotion_classifier_config.bert_dir_v2, local_files_only=True
             )
 
         inputs = tokenizer(
@@ -79,14 +84,18 @@ class BatchTextEmotionClassificationView(APIView):
         emotion_classifier_config = apps.get_app_config("emotion_classifier")
 
         if model == "v1":
-            tokenizer, model = (
-                emotion_classifier_config.bert_tokenizer,
-                emotion_classifier_config.bert_model,
+            model = TFAutoModelForSequenceClassification.from_pretrained(
+                emotion_classifier_config.bert_dir, local_files_only=True
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                emotion_classifier_config.bert_dir, local_files_only=True
             )
         else:
-            tokenizer, model = (
-                emotion_classifier_config.bert_tokenizer_v2,
-                emotion_classifier_config.bert_model_v2,
+            model = TFAutoModelForSequenceClassification.from_pretrained(
+                emotion_classifier_config.bert_dir_v2, local_files_only=True
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                emotion_classifier_config.bert_dir_v2, local_files_only=True
             )
 
         results = []
