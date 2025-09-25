@@ -37,8 +37,8 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     "daphne",
     "rest_framework",
-    "core",
-    "emotion_classifier",
+    "app.core",
+    "app.emotion_classifier",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "channels",
-    "chat",
+    "app.chat",
 ]
 
 ASGI_APPLICATION = "src.asgi.application"
